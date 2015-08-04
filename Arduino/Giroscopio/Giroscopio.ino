@@ -1,10 +1,10 @@
 /* FORMULA SAE UFPB
- * DATA DE CRIAÇÃO:
- * CRIADO POR:
+ * DATA DE CRIAÇÃO 04/08/2015
+ * CRIADO POR: Josias Ferreira  
  * MANTIDO POR:
  * DESCRIÇÃO:
- * FUNÇÕES:
- * VERSÃO:
+ * FUNÇÕES: Angulo dos três eixos;
+ * VERSÃO:0.1
  */
 
 
