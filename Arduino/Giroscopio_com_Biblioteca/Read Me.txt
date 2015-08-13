@@ -1,0 +1,10 @@
+Links relacionados a criação de bibliotecas:
+
+Nos arquivos ao lado temos a descrição inicial de uma biblioteca para giroscópio GY 521
+com saída para aceleração e angulação X,Y,Z e também temperatura local.
+
+Criação de bibliotecas em Arduino
+http://br-arduino.org/2014/12/criando-uma-biblioteca-para-o-arduino-para-facilitar-o-reuso-de-suas-funcoes.html
+
+Utilização de MPU com Arduíno
+http://blog.filipeflop.com/sensores/tutorial-acelerometro-mpu6050-arduino.html
