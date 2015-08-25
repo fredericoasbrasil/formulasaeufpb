@@ -1,3 +1,12 @@
+/* FORMULA SAE UFPB
+ * DATA DE CRIAÇÃO: 20/08/2015
+ * CRIADO POR: Frederico Augusto Santos Brasil
+ * MANTIDO POR: Frederico Augusto Santos Brasil
+ * DESCRIÇÃO: Utilizando as bibliotecas TinyGPS++ e SoftwareSerial, imprime os dados DATA,HORA,VELOCIDADE,LATITUDE,LONGITUDE,ALTITUDE,SATELITES
+ * FUNÇÕES: Imprimir os valores obtidos através do módulo GPS no console serial, salvar em cartao SD e transmitir via xbee.
+ * VERSÃO: 0.1
+ */
+
 #include <TinyGPS++.h>
 #include <SoftwareSerial.h>
 
