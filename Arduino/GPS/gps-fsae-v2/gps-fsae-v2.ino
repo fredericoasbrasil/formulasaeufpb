@@ -31,7 +31,7 @@ void setup() {
 
   Serial.begin(115200);
   //ss.begin(GPSBaud);
-  Serial1.begin(4800);
+  Serial1.begin(9600);
   Serial.println("Formula UFPB - Sensoriamento");
   Serial.println("Demonstrando leitura de campos NMEA utilizando a biblioteca TinyGPS++");
   Serial.println("Formato dos campos gravados no cartao SD e transmissao por Xbee");
@@ -42,6 +42,9 @@ void setup() {
 void loop() 
 {
   
+    //Serial.println(Serial1.read());
+    //delay(300);
+    
     gps.encode(Serial1.read());
   
     delay(100);
@@ -60,10 +63,5 @@ void loop()
     Serial.print(",");
     Serial.println(gps.satellites.value()); // Quantidade de satelites rastreados
 
-
-
-
-    
- 
 
 }
