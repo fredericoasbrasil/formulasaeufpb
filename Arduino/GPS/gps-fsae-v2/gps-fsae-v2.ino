@@ -8,30 +8,15 @@
  */
 
 #include <TinyGPS++.h>
-
-
-//GPS 5V
-//RXPin ligado ao pino TX do GPS 1
-//TXPin ligado ao pino RX do GPS 1
-static const int RXPin = 10, TXPin = 11;
-static const uint32_t GPSBaud = 4800;
-
-
-
 // O objeto TinyGPS++
 TinyGPSPlus gps;
-
-
-
-// A coneão serial com o modulo
-//SoftwareSerial ss(RXPin, TXPin);
-//HardwareSerial ss = Serial1;;
 
 void setup() {
 
   Serial.begin(115200);
-  //ss.begin(GPSBaud);
-  Serial1.begin(9600);
+  //GPS Conectado a Hardware Serial1(TX 18, RX 19)
+  Serial1.begin(4800);
+  
   Serial.println("Formula UFPB - Sensoriamento");
   Serial.println("Demonstrando leitura de campos NMEA utilizando a biblioteca TinyGPS++");
   Serial.println("Formato dos campos gravados no cartao SD e transmissao por Xbee");
@@ -41,24 +26,23 @@ void setup() {
 
 void loop() 
 {
-  
-    gps.encode(Serial1.read());
-  
-    delay(100);
-    
-    Serial.print(gps.date.value()); // Data no formato DDMMYY
-    Serial.print(",");
-    Serial.print(gps.time.value()); // Hora no formato HHMMSSCC
-    Serial.print(",");
-    Serial.print(gps.speed.kmph()); // Velocidade instantanea em Km/h
-    Serial.print(",");
-    Serial.print(gps.location.lat(), 6); // Latitude em graus
-    Serial.print(",");
-    Serial.print(gps.location.lng(), 6); // Longitude em graus
-    Serial.print(",");
-    Serial.print(gps.altitude.meters());  // Altitude em metros
-    Serial.print(",");
-    Serial.println(gps.satellites.value()); // Quantidade de satelites rastreados
-
+	while(Serial1.available()){
+		if(gps.encode(Serial1.read())){
+		
+		Serial.print(gps.date.value()); // Data no formato DDMMYY
+		Serial.print(",");
+		Serial.print(gps.time.value()); // Hora no formato HHMMSSCC
+		Serial.print(",");
+		Serial.print(gps.speed.kmph()); // Velocidade instantanea em Km/h
+		Serial.print(",");
+		Serial.print(gps.location.lat(), 6); // Latitude em graus
+		Serial.print(",");
+		Serial.print(gps.location.lng(), 6); // Longitude em graus
+		Serial.print(",");
+		Serial.print(gps.altitude.meters());  // Altitude em metros
+		Serial.print(",");
+		Serial.println(gps.satellites.value()); // Quantidade de satelites rastreados
+		}
+	}
 
 }
