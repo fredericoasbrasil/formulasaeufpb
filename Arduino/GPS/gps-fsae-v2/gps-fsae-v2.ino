@@ -42,9 +42,6 @@ void setup() {
 void loop() 
 {
   
-    //Serial.println(Serial1.read());
-    //delay(300);
-    
     gps.encode(Serial1.read());
   
     delay(100);
