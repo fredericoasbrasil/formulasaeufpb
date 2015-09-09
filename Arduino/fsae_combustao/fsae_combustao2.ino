@@ -101,14 +101,13 @@ void setup() {
           Serial.println(" Erro!");
           else
           Serial.println(" OK!");
-           
+          
 }
 
 void loop() {
 // ------------------------------------------------------
 // Rotinas relativas ao GPS e RTC
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Serial.print("## ");
 String dados = "";
                while(Serial1.available()){
 		if(gps.encode(Serial1.read())){
@@ -128,9 +127,6 @@ String dados = "";
 			Serial.println(";");*/
                         dtostrf((gps.location.lat()), 5, 5, latit);
                         dtostrf((gps.location.lng()), 5, 5, longit);
-                        dados += (gps.date.value()); dados += (";"); dados += (gps.time.value()); dados += (";");  dados += (gps.speed.kmph()); dados += (";");  
-                        dados += (latit); dados += (";"); dados += (longit); dados += (";");  dados += (gps.altitude.meters()); dados += (";");  
-                        dados += (gps.satellites.value()); dados += (";");
                         
 // ------------------------------------------------------
 // Rotinas relativas ao Giroscópio e Acelerômetro
@@ -184,15 +180,18 @@ String dados = "";
   
 // Atualiza os valores de X, Y e Z  da inclinação;
  getGyroValues();
-dados += (Xg); dados += (";"); dados += (Yg); dados += (";"); dados += (Zg); dados += (";");
-dados += (x); dados += (";"); dados += (y); dados += (";"); dados += (z);
+ //Escreve todos os dados na string;
+ dados += (gps.date.value()); dados += (";"); dados += (gps.time.value()); dados += (";");  dados += (gps.speed.kmph()); dados += (";");  
+ dados += (latit); dados += (";"); dados += (longit); dados += (";");  dados += (gps.altitude.meters()); dados += (";");  
+ dados += (gps.satellites.value()); dados += (";");
+ dados += (Xg); dados += (";"); dados += (Yg); dados += (";"); dados += (Zg); dados += (";");dados += (x); dados += (";"); dados += (y); dados += (";"); dados += (z);
 
 
 // ------------------------------------------------------
 // Rotinas relativas ao Xbee e Cartão SD
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Serial.println(dados);
-File dataFile = SD.open("testeprot7.txt", FILE_WRITE);
+File dataFile = SD.open("testeprot8.txt", FILE_WRITE);
   //escreve os dados e fecha o arquivo
   if (dataFile) {
     dataFile.println(dados);
