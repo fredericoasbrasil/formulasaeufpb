@@ -14,8 +14,10 @@
 // Declarações e bibliotecas relativas ao GPS e RTC
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #include <TinyGPS++.h>
-
 TinyGPSPlus gps;
+#include <stdlib.h>
+char latit[10];
+char longit[10];
 
 
 // ------------------------------------------------------
@@ -106,6 +108,7 @@ void loop() {
 // ------------------------------------------------------
 // Rotinas relativas ao GPS e RTC
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Serial.print("## ");
 String dados = "";
                while(Serial1.available()){
 		if(gps.encode(Serial1.read())){
@@ -123,14 +126,12 @@ String dados = "";
 			Serial.print(";");
 			Serial.print(gps.satellites.value()); // Quantidade de satelites rastreados
 			Serial.println(";");*/
+                        dtostrf((gps.location.lat()), 5, 5, latit);
+                        dtostrf((gps.location.lng()), 5, 5, longit);
                         dados += (gps.date.value()); dados += (";"); dados += (gps.time.value()); dados += (";");  dados += (gps.speed.kmph()); dados += (";");  
-                        dados += (gps.location.lat()); dados += (";"); dados += (gps.location.lng()); dados += (";");  dados += (gps.altitude.meters()); dados += (";");  
+                        dados += (latit); dados += (";"); dados += (longit); dados += (";");  dados += (gps.altitude.meters()); dados += (";");  
                         dados += (gps.satellites.value()); dados += (";");
                         
-                      }
-                }
-              
-
 // ------------------------------------------------------
 // Rotinas relativas ao Giroscópio e Acelerômetro
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -183,8 +184,8 @@ String dados = "";
   
 // Atualiza os valores de X, Y e Z  da inclinação;
  getGyroValues();
- dados += (Xg); dados += (";"); dados += (Yg); dados += (";"); dados += (Zg); dados += (";");
- dados += (x); dados += (";"); dados += (y); dados += (";"); dados += (z); dados += ("\n");
+dados += (Xg); dados += (";"); dados += (Yg); dados += (";"); dados += (Zg); dados += (";");
+dados += (x); dados += (";"); dados += (y); dados += (";"); dados += (z);
 
 
 // ------------------------------------------------------
@@ -197,9 +198,11 @@ File dataFile = SD.open("testeprot7.txt", FILE_WRITE);
     dataFile.println(dados);
     dataFile.close();
   }
-
+ }
 }
-
+}
+               
+               
 // Colocar comentários sobre as subfunções do giro;
 
 void getGyroValues()
