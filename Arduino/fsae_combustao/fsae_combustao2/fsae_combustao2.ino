@@ -1,3 +1,4 @@
+
 /* FORMULA SAE UFPB
  * DATA DE CRIAÇÃO: 04/09/2015
  * CRIADO POR: Frederico Augusto Santos Brasil
@@ -15,7 +16,8 @@
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #include <TinyGPS++.h>
 TinyGPSPlus gps;
-#include <stdlib.h>
+//#include <stdlib.h>
+#include <SdFat.h>
 char latit[10];
 char longit[10];
 
