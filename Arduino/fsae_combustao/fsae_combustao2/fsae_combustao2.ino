@@ -145,7 +145,7 @@ SdFat SD;
 const int chipSelect = 53;
 
 void setup() {
-
+	delay(2000);
 	//Inicializa o console serial
 	Serial.begin(9600);
 
@@ -156,6 +156,7 @@ void setup() {
 
 	//GPS conectado a Serial1 do arduino Mega
 	Serial1.begin(4800);
+	Serial3.begin(57600);
   myRTC.updateTime();
 	String dataSessao = "";
 	dataSessao += myRTC.dayofmonth + myRTC.month + myRTC.year + myRTC.hours + myRTC.minutes + myRTC.seconds;
@@ -208,27 +209,17 @@ void loop() {
 // Rotinas relativas ao GPS e RTC
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
     String dados = "";
-    myRTC.updateTime();
-    dados += (myRTC.dayofmonth);
-    dados += (myRTC.month);
-    dados += (myRTC.year);
-    dados += (";");
-    dados += (myRTC.hours);
-    dados += (myRTC.minutes);
-    dados += (myRTC.seconds);
-    dados += (";");
+		myRTC.updateTime();
 
     while(Serial1.available()){
-		if(gps.encode(Serial1.read())){
+											if(gps.encode(Serial1.read())){
                         dtostrf((gps.location.lat()), 5, 5, latit);
                         dtostrf((gps.location.lng()), 5, 5, longit);
-                      }
-                    }
-      dados += (latit); dados += (";");
-      dados += (longit); dados += (";");
-      dados += (gps.speed.kmph()); dados += (";");
-      dados += (gps.altitude.meters()); dados += (";");
-      dados += (gps.satellites.value()); dados += (";");
+
+
+
+
+
 // ------------------------------------------------------
 // Rotinas relativas ao Giroscópio e Acelerômetro
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -283,24 +274,45 @@ void loop() {
  getGyroValues();
  //Escreve todos os dados na string;
 
- dados += (Xg); dados += (";");
- dados += (Yg); dados += (";");
- dados += (Zg); dados += (";");
- dados += (x); dados += (";");
- dados += (y); dados += (";");
- dados += (z); dados += (";");
+// Impressão de valores RTC
+ dados += myRTC.dayofmonth;
+ dados += myRTC.month;
+ dados += myRTC.year;
+ dados += ";";
+ dados += myRTC.hours;
+ dados += myRTC.minutes;
+ dados += myRTC.seconds;
+ dados += ";";
+
+ // Impressão de valores GPS
+ dados += latit; dados += ";";
+ dados += longit; dados += ";";
+ dados += gps.speed.kmph();  dados += ";";
+ dados += gps.altitude.meters(); dados += ";";
+ dados += gps.satellites.value(); dados += ";";
+
+// Impressão de valores GYRO Acelerometro
+ dados += Xg; dados += ";";
+ dados += Yg; dados += ";";
+ dados += Zg; dados += ";";
+ dados += x; dados += ";";
+ dados += y; dados += ";";
+ dados += z; dados += ";";
 
 
 // ------------------------------------------------------
 // Rotinas relativas ao Xbee e Cartão SD
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Serial.println(dados);
+Serial3.println(dados);
 
-File dataFile = SD.open("datalogfsae.txt", FILE_WRITE);
+File dataFile = SD.open("datalogfsae3.txt", FILE_WRITE);
   //escreve os dados e fecha o arquivo
   if (dataFile) {
     dataFile.println(dados);
     dataFile.close();
   }
-  delay(100);
+
+}
+}
 }
