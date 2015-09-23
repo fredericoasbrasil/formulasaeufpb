@@ -216,10 +216,6 @@ void loop() {
                         dtostrf((gps.location.lat()), 5, 5, latit);
                         dtostrf((gps.location.lng()), 5, 5, longit);
 
-
-
-
-
 // ------------------------------------------------------
 // Rotinas relativas ao Giroscópio e Acelerômetro
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -278,26 +274,26 @@ void loop() {
  dados += myRTC.dayofmonth;
  dados += myRTC.month;
  dados += myRTC.year;
- dados += ";";
+ dados += ",";
  dados += myRTC.hours;
  dados += myRTC.minutes;
  dados += myRTC.seconds;
- dados += ";";
+ dados += ",";
 
  // Impressão de valores GPS
- dados += latit; dados += ";";
- dados += longit; dados += ";";
- dados += gps.speed.kmph();  dados += ";";
- dados += gps.altitude.meters(); dados += ";";
- dados += gps.satellites.value(); dados += ";";
+ dados += latit; dados += ",";
+ dados += longit; dados += ",";
+ dados += gps.speed.kmph();  dados += ",";
+ dados += gps.altitude.meters(); dados += ",";
+ dados += gps.satellites.value(); dados += ",";
 
 // Impressão de valores GYRO Acelerometro
- dados += Xg; dados += ";";
- dados += Yg; dados += ";";
- dados += Zg; dados += ";";
- dados += x; dados += ";";
- dados += y; dados += ";";
- dados += z; dados += ";";
+ dados += Xg; dados += ",";
+ dados += Yg; dados += ",";
+ dados += Zg; dados += ",";
+ dados += x; dados += ",";
+ dados += y; dados += ",";
+ dados += z; dados += ",";
 
 
 // ------------------------------------------------------
@@ -310,7 +306,7 @@ File dataFile = SD.open("datalogfsae3.txt", FILE_WRITE);
   //escreve os dados e fecha o arquivo
   if (dataFile) {
     dataFile.println(dados);
-    dataFile.close();
+		dataFile.close();
   }
 
 }
