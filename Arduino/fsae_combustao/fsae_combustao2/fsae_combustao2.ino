@@ -20,20 +20,19 @@ TinyGPSPlus gps;
 
 char latit[10];
 char longit[10];
-
-#include <virtuabotixRTC.h>
-// Determina os pinos ligados ao modulo
-// myRTC(clock, data, rst)
-//clk roxo - 2
-//dat cinza - 3
-//rst branco - 4
-virtuabotixRTC myRTC(2, 3, 4);
-
-
 // ------------------------------------------------------
 // Declarações e bibliotecas relativas ao Giroscópio e Acelerômetro
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #include <Wire.h>
+#include <ADXL345.h>
+
+const float alpha = 0.5;
+ 
+double fXg = 0;
+double fYg = 0;
+double fZg = 0;
+ 
+ADXL345 acc;
 
 #define CTRL_REG1 0x20
 #define CTRL_REG2 0x21
@@ -83,7 +82,7 @@ void calibrate()
   for (int i = 0; i < 200; i++) {
     getGyroValues();
 
-    if (x > gyroHighX)
+    /*if (x > gyroHighX)
       gyroHighX = x;
     else if (x < gyroLowX)
       gyroLowX = x;
@@ -92,7 +91,7 @@ void calibrate()
       gyroHighY = y;
     else if (y < gyroLowY)
       gyroLowY = y;
-
+*/
     if (z > gyroHighZ)
       gyroHighZ = z;
     else if (z < gyroLowZ)
@@ -186,29 +185,46 @@ SdFat SD;
 
 const int chipSelect = 53;
 
+double pitch, roll, Xg, Yg, Zg;
+
+void getacc(){
+      
+      acc.read(&Xg, &Yg, &Zg);
+ 
+       //Low Pass Filter
+       fXg = Xg * alpha + (fXg * (1.0 - alpha));
+       fYg = Yg * alpha + (fYg * (1.0 - alpha));
+       fZg = Zg * alpha + (fZg * (1.0 - alpha));
+ 
+       //Roll & Pitch Equations
+       roll  = (atan2(-fYg, fZg)*180.0)/M_PI;
+       pitch = (atan2(fXg, sqrt(fYg*fYg + fZg*fZg))*180.0)/M_PI;
+      delay(10);
+}
+
 void setup() {
   //Inicializa o console serial
-  Serial.begin(9600);
-
-
+  Serial.begin(38400);
+  acc.begin();
+  delay(200);  
   // ------------------------------------------------------
   // Configurações relativas ao GPS e RTC
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   //GPS conectado a Serial1 do arduino Mega
-  Serial1.begin(4800);
+  Serial1.begin(38400);
   Serial3.begin(57600);
 
   // seconds, minutes, hours, day of the week, day of the month, month, year
   //myRTC.setDS1302Time(00, 44, 19, 4, 23, 9, 2015);
   //myRTC.updateTime();
-  String dataSessao = "";
-  dataSessao += myRTC.dayofmonth + myRTC.month + myRTC.year + myRTC.hours + myRTC.minutes + myRTC.seconds;
+  //String dataSessao = "";
+  //dataSessao += myRTC.dayofmonth + myRTC.month + myRTC.year + myRTC.hours + myRTC.minutes + myRTC.seconds;
 
-  Serial.println("Formula SAE UFPB - Sessao " + dataSessao);
+  Serial.println("Formula SAE UFPB");
   delay(300);
   Serial.println("Formato dos dados");
-  Serial.println("DiaMesAno;HoraMinutosSegundos;Latitude;Longitude;Velocidade;Altitude;Satelites;GyroX;GyroY;GyroZ");
+  Serial.println("DiaMesAno,HoraMinutosSegundos,Longitude,Latitude,Velocidade,Altitude,Satelites,GyroX,GyroY,GyroZ");
   delay(300);
 
   // ------------------------------------------------------
@@ -217,13 +233,14 @@ void setup() {
   Wire.begin();
 
   Serial.println("Inicializando Giroscopio...");
-  setupL3G4200D(250); // Configure L3G4200  - 250, 500 or 2000 deg/sec
+  setupL3G4200D(2000); // Configure L3G4200  - 250, 500 or 2000 deg/sec
 
   delay(1000); // wait for the sensor to be ready
   calibrate();
   attachInterrupt(0, updateAngle, RISING);
 
   pastMicros = micros();
+  
 
   // ------------------------------------------------------
   // Configurações relativas ao Xbee e Cartão SD
@@ -235,23 +252,17 @@ void setup() {
     Serial.println(" Erro!");
   else
     Serial.println(" OK!");
-
-  File dataFile = SD.open("datalogfsae23.09-2.txt", FILE_WRITE);
   //escreve os dados e fecha o arquivo
-  if (dataFile) {
-    dataFile.println(dataSessao);
-    dataFile.close();
-  }
 
 }
 
 void loop() {
-  String dados = "";
   // ------------------------------------------------------
   // Rotinas relativas ao GPS e RTC
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  while (Serial1.available()) {
+  while(Serial1.available()) {
      //myRTC.updateTime();
+    String dados = "";
 
     if (gps.encode(Serial1.read())) {
       dtostrf((gps.location.lat()), 5, 5, latit);
@@ -261,8 +272,8 @@ void loop() {
       // Rotinas relativas ao Giroscópio e Acelerômetro
       // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
       getGyroValues();
-
-      // Calculate delta time
+      
+       //Calculate delta time
       float dt;
       if (micros() > pastMicros) //micros() overflows every ~70 minutes
         dt = (float) (micros() - pastMicros) / 1000000.0;
@@ -271,7 +282,7 @@ void loop() {
 
 
       // Calculate angles
-      if (x >= gyroHighX || x <= gyroLowX) {
+     /*  if (x >= gyroHighX || x <= gyroLowX) {
         angX += ((p_angX + (x * DPS_MULT)) / 2) * dt;
         p_angX = x * DPS_MULT;
       } else {
@@ -283,7 +294,7 @@ void loop() {
         p_angY = y * DPS_MULT;
       } else {
         p_angY = 0;
-      }
+      }*/
 
       if (z >= gyroHighZ || z <= gyroLowZ) {
         angZ += ((p_angZ + (z * DPS_MULT)) / 2) * dt;
@@ -293,19 +304,8 @@ void loop() {
       }
 
       pastMicros = micros();
-
-      //Escreve todos os dados na string;
-
-      // Impressão de valores RTC
-      /*dados += myRTC.dayofmonth;
-      dados += myRTC.month;
-      dados += myRTC.year;
-      dados += ",";
-      dados += myRTC.hours;
-      dados += myRTC.minutes;
-      dados += myRTC.seconds;
-      dados += ",";*/
-
+      
+      getacc();
       // Impressão de valores GPS
       dados += gps.date.year(); dados += "-"; 
       dados += gps.date.month(); dados += "-";
@@ -320,10 +320,10 @@ void loop() {
       dados += gps.satellites.value(); dados += ",";
 
       // Impressão de valores GYRO Acelerometro
-      dados += (angX * 1000); dados += ",";
-      dados += (angY * 1000); dados += ",";
-      dados += (angZ * 100);
-
+      dados += (roll); dados += ",";
+      dados += (pitch); dados += ",";
+      dados += (angZ * 1000);
+      
 
       // ------------------------------------------------------
       // Rotinas relativas ao Xbee e Cartão SD
@@ -331,12 +331,15 @@ void loop() {
       Serial.println(dados);
       Serial3.println(dados);
 
-      File dataFile = SD.open("datalogfsae23.09-2.txt", FILE_WRITE);
+      File dataFile = SD.open("trajeto29.09-2.txt", FILE_WRITE);
       //escreve os dados e fecha o arquivo
       if (dataFile) {
         dataFile.println(dados);
         dataFile.close();
+        delay(10);
       }
     }
   }
 }
+
+
