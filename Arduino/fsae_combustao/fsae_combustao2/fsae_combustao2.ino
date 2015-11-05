@@ -205,6 +205,8 @@ void getacc(){
 void setup() {
   //Inicializa o console serial
   Serial.begin(38400);
+  Serial1.begin(38400);
+  Serial3.begin(57600);
   acc.begin();
   delay(200);  
   // ------------------------------------------------------
@@ -212,8 +214,6 @@ void setup() {
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   //GPS conectado a Serial1 do arduino Mega
-  Serial1.begin(38400);
-  Serial3.begin(57600);
 
   // seconds, minutes, hours, day of the week, day of the month, month, year
   //myRTC.setDS1302Time(00, 44, 19, 4, 23, 9, 2015);
@@ -255,7 +255,10 @@ void setup() {
   //escreve os dados e fecha o arquivo
 
 }
-
+       String nomear(String nome)
+      {
+         return nome;
+      }
 void loop() {
   // ------------------------------------------------------
   // Rotinas relativas ao GPS e RTC
@@ -304,7 +307,6 @@ void loop() {
       }
 
       pastMicros = micros();
-      
       getacc();
       // Impressão de valores GPS
       dados += gps.date.year(); dados += "-"; 
@@ -312,33 +314,35 @@ void loop() {
       dados += gps.date.day(); dados += ",";
       dados += gps.time.hour(); dados += "-"; 
       dados += gps.time.minute(); dados += "-"; 
-      dados += gps.time.second(); dados += ",";
+      dados += gps.time.second(); String nome_arquivo=dados+".txt"; dados += ",";
       dados += longit; dados += ",";
       dados += latit; dados += ",";
       dados += gps.speed.kmph();  dados += ",";
       dados += gps.altitude.meters(); dados += ",";
       dados += gps.satellites.value(); dados += ",";
-
+      
       // Impressão de valores GYRO Acelerometro
       dados += (roll); dados += ",";
       dados += (pitch); dados += ",";
-      dados += (angZ * 1000);
-      
+      dados += (angZ * 1000); dados += ",";
+      dados += fXg; dados += ",";
+      dados += fYg;
 
       // ------------------------------------------------------
       // Rotinas relativas ao Xbee e Cartão SD
       // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      
       Serial.println(dados);
-      Serial3.println(dados);
-
-      File dataFile = SD.open("trajeto29.09-2.txt", FILE_WRITE);
+      
+      File dataFile = SD.open("Teste05.11", FILE_WRITE);
       //escreve os dados e fecha o arquivo
       if (dataFile) {
         dataFile.println(dados);
         dataFile.close();
-        delay(10);
-      }
+        delay(10);        
+      Serial3.println(dados);
     }
+   }
   }
 }
 
