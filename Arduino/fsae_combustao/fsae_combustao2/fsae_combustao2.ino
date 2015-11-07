@@ -334,7 +334,7 @@ void loop() {
       
       Serial.println(dados);
       
-      File dataFile = SD.open("Teste05.11", FILE_WRITE);
+      File dataFile = SD.open("Teste06.11.txt", FILE_WRITE);
       //escreve os dados e fecha o arquivo
       if (dataFile) {
         dataFile.println(dados);
