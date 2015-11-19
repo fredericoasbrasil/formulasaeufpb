@@ -1,6 +1,9 @@
 #include <nmea.h>
 
 NMEA gps(GPRMC);
+float ultima_lat;
+float ultima_lon;
+double odometro;
 
 void setup(){
   Serial1.begin(4800); // Conectado ao GPS
@@ -60,13 +63,12 @@ void setup(){
   Serial.println("Aguardando 'FIX' do GPS");
 
   while (Serial1.available()) {
-    Serial.println("Entrou");
+  //  Serial.println("Entrou");
     char c = Serial1.read();
     if (gps.decode(c)) {
       if (gps.gprmc_status() == 'A') {
-        Serial.println("FIX obtido");
-      } else {
-        Serial.println("Sem FIX");
+        Serial.println("Status OK");
+        break;
       }
     }
   }
@@ -79,13 +81,62 @@ void setup(){
   Serial.println(" OK");
   Serial.println("");
   delay(300);
+  
+  
 
   Serial.println("Sistema pronto e gravando. Iniciando Datalog.");
+  Serial.println("Padrão dos dados:");
 
 }
 
 void loop(){
 
+  // Verifica se a Serial1 conectada ao GPS está disponivel
+  if (Serial1.available()) {
+
+    //Le a Serial1
+    if (gps.decode(Serial1.read())) {
+      //Se encontrar sentença GPS válida, executa as medições, caso contrário inicia o loop novamente
+      if (gps.gprmc_status() == 'A') {
+
+      // Rotinas do GPS
+      String dados = "";
+      
+      float latitude, longitude;
+      char lat[12];
+      char lon[12];
+      longitude = gps.gprmc_longitude();
+      latitude = gps.gprmc_latitude();
+      dtostrf(latitude,1,5,lat);
+      dtostrf(longitude,1,5,lon);
+
+      dados += String(lon);
+      dados += ",";
+      dados += String(lat);
+      dados += ",";
+      dados += gps.gprmc_speed(KMPH);
+      dados += ",";
+      odometro += gps.gprmc_distance_to(ultima_lat, ultima_lon, MTR);
+      ultima_lon = longitude;
+      ultima_lat = latitude;
+      dados += odometro;
+      dados += ",";
+
+      //Rotinas do RTC
+
+      // Rotinas do Acelerometro/Giroscopio
+
+      // Rotinas do Cartão SD
+
+      // Rotinas do XBEE
 
 
+      //Saida dos dados
+      Serial.println(dados);
+
+
+
+      }
+    }
+  }
 }

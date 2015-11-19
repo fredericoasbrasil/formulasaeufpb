@@ -8,7 +8,7 @@ NMEA gps(GPRMC);    // GPS data connection to all sentence types
 
 void setup() {
   Serial.begin(9600);
-  Serial1.begin(4800);
+  Serial1.begin(38400);
 }
 
 void loop() {
